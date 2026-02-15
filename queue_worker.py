@@ -19,9 +19,12 @@ class Worker:
         self.job_queue = job_queue
         self._stop_event = threading.Event()
         self._thread = threading.Thread(target=self._run, daemon=True)
+        self._next_dequeue_timeout: Optional[float] = None
 
     def start(self) -> None:
         """Start the worker thread. Safe to call once."""
+        if self._thread.is_alive():
+            return
         logger.info("Worker started")
         self._thread.start()
 

@@ -15,6 +15,8 @@ class Job:
         max_retries: int = 3,
         countdown: int = 0,
     ):
+        if max_retries < 0 or countdown < 0:
+            raise ValueError("max_retries and countdown must be non-negative")
         self.id = str(uuid.uuid4())
         self.func = func
         self.args: Tuple[Any, ...] = args

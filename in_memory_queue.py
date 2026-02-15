@@ -20,3 +20,7 @@ class JobQueue:
             return self._queue.get(timeout=timeout)
         except queue.Empty:
             return None
+
+    def size(self) -> int:
+        """Return the number of jobs in the queue."""
+        return self._queue.qsize()
