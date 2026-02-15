@@ -1,3 +1,4 @@
+import datetime
 import logging
 import threading
 import time
@@ -43,6 +44,15 @@ class Worker:
         while not self._stop_event.is_set():
             job = self.job_queue.dequeue()
             if not job:
+                continue
+            now = datetime.datetime.now()
+            if job.eta and job.eta > now:
+                self.job_queue.enqueue(job)
+                logger.info("Job %s delayed until %s", job, job.eta)
+                # Sleep until ETA or 1s to avoid busy-looping when queue has only delayed jobs
+                delay = min(1.0, (job.eta - now).total_seconds())
+                if delay > 0:
+                    time.sleep(delay)
                 continue
             self._process_job(job)
 
